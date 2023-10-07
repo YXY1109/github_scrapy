@@ -1,15 +1,34 @@
 import scrapy
+import undetected_chromedriver as uc
 
 
 class QuotesSpider(scrapy.Spider):
     name = "cnblogs"
 
+    custom_settings = {
+        "COOKIES_ENABLED": True,
+    }
+
     def start_requests(self):
         urls = [
             "https://news.cnblogs.com/"
         ]
+        options = uc.ChromeOptions()
+        options.headless = False
+        browser = uc.Chrome(options=options, version_main=114)
+        browser.get("https://account.cnblogs.com/signin")
+        input("回车，继续")
+        cookies = browser.get_cookies()
+        cookies_dict = {}
+        for cookie in cookies:
+            cookies_dict[cookie["name"]] = cookie["value"]
+
         for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                              "(KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+            }
+            yield scrapy.Request(url=url, callback=self.parse, cookies=cookies_dict, headers=headers, dont_filter=True)
 
     def parse(self, response):
         """
