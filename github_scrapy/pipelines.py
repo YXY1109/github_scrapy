@@ -10,4 +10,6 @@ from itemadapter import ItemAdapter
 
 class GithubScrapyPipeline:
     def process_item(self, item, spider):
+        title = item.get("title")
+        print(f"pipeline----------------------:{title}")
         return item

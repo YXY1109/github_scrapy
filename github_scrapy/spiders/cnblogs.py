@@ -4,6 +4,9 @@ from urllib import parse
 import scrapy
 import undetected_chromedriver as uc
 
+from github_scrapy.items import CnBlogsItem
+from github_scrapy.utils.common import get_md5
+
 
 class QuotesSpider(scrapy.Spider):
     name = "cnblogs"
@@ -20,7 +23,8 @@ class QuotesSpider(scrapy.Spider):
         options.headless = False
         browser = uc.Chrome(options=options, version_main=114)
         browser.get("https://account.cnblogs.com/signin")
-        time.sleep(3)
+        # time.sleep(3)
+        input("回车继续！！！")
         cookies = browser.get_cookies()
         cookies_dict = {}
         for cookie in cookies:
@@ -68,12 +72,12 @@ class QuotesSpider(scrapy.Spider):
         # url_list = response.css('#news_list h2 a::attr(href)').extract()
 
         # 获取详情页面的链接，并准备解析详情数据
-        post_nodes = response.xpath('//div[@id="news_list"]/div[@class="news_block"]')
+        post_nodes = response.xpath('//div[@id="news_list"]/div[@class="news_block"]')[:10]
         for post_node in post_nodes:
             image_url = post_node.xpath('//div[@class="entry_summary"]/a/img/@src').extract_first()
             post_url = post_node.xpath('//h2[@class="news_entry"]/a/@href').extract_first()
             yield scrapy.Request(url=parse.urljoin(response.url, post_url), callback=self.parse_detail,
-                                 meta={"front_image_url": image_url})
+                                 meta={"image_urls": image_url})
 
         """
         # 提取下一页的数据,第一种方式
@@ -96,6 +100,13 @@ class QuotesSpider(scrapy.Spider):
         :param response:
         :return:
         """
+        cn_item = CnBlogsItem()
         title = response.xpath('//div[@id="news_title"]/a/text()').get()
         content_list = response.xpath('//div[@id="news_body"]//p/text()').getall()
-        pass
+        cn_item["title"] = title
+        cn_item["content"] = ",".join(content_list)
+        # cn_item["front_image_url"] = response.meta.get("front_image_url", "")
+        cn_item["image_urls"] = [response.meta.get("image_urls", "")]
+        cn_item["url_object_id"] = get_md5(response.url)
+
+        yield cn_item

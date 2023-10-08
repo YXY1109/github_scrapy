@@ -6,7 +6,8 @@
 import scrapy
 
 
-class GithubScrapyItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class CnBlogsItem(scrapy.Item):
+    title = scrapy.Field()
+    content = scrapy.Field()
+    image_urls = scrapy.Field()
+    url_object_id = scrapy.Field()
