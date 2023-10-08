@@ -1,3 +1,4 @@
+import time
 from urllib import parse
 
 import scrapy
@@ -15,25 +16,25 @@ class QuotesSpider(scrapy.Spider):
         urls = [
             "https://news.cnblogs.com/"
         ]
-        # options = uc.ChromeOptions()
-        # options.headless = False
-        # browser = uc.Chrome(options=options, version_main=114)
-        # browser.get("https://account.cnblogs.com/signin")
-        # input("回车，继续")
-        # cookies = browser.get_cookies()
-        # cookies_dict = {}
-        # for cookie in cookies:
-        #     cookies_dict[cookie["name"]] = cookie["value"]
-        #
-        # for url in urls:
-        #     headers = {
-        #         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
-        #                       "(KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
-        #     }
-        #     yield scrapy.Request(url=url, callback=self.parse, cookies=cookies_dict, headers=headers, dont_filter=True)
+        options = uc.ChromeOptions()
+        options.headless = False
+        browser = uc.Chrome(options=options, version_main=114)
+        browser.get("https://account.cnblogs.com/signin")
+        time.sleep(3)
+        cookies = browser.get_cookies()
+        cookies_dict = {}
+        for cookie in cookies:
+            cookies_dict[cookie["name"]] = cookie["value"]
 
         for url in urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+                              "(KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36"
+            }
+            yield scrapy.Request(url=url, callback=self.parse, cookies=cookies_dict, headers=headers, dont_filter=True)
+
+        # for url in urls:
+        #     yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
         """
@@ -86,8 +87,8 @@ class QuotesSpider(scrapy.Spider):
         """
 
         # 提取下一页的数据,第二种方式
-        next_url = response.xpath('//a[contains(text(),"Next >")]/@href').extract_first()
-        yield scrapy.Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
+        # next_url = response.xpath('//a[contains(text(),"Next >")]/@href').extract_first()
+        # yield scrapy.Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
 
     def parse_detail(self, response):
         """
@@ -95,4 +96,6 @@ class QuotesSpider(scrapy.Spider):
         :param response:
         :return:
         """
+        title = response.xpath('//div[@id="news_title"]/a/text()').get()
+        content_list = response.xpath('//div[@id="news_body"]//p/text()').getall()
         pass
