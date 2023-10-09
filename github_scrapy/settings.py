@@ -67,7 +67,7 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "github_scrapy.pipelines.GithubScrapyPipeline": 300,
-    "scrapy.pipelines.images.ImagesPipeline": 1,
+    "github_scrapy.pipelines.ArticleImagePipeline": 1,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -106,4 +106,4 @@ IMAGES_STORE = image_store_path
 
 # 图片下载的字段
 IMAGES_URLS_FIELD = "front_image_url"
-IMAGES_RESULT_FIELD = "front_image_name"
+IMAGES_RESULT_FIELD = "image_file_path"

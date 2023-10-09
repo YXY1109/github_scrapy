@@ -10,5 +10,5 @@ class CnBlogsItem(scrapy.Item):
     title = scrapy.Field()
     content = scrapy.Field()
     front_image_url = scrapy.Field()
-    front_image_name = scrapy.Field()
+    image_file_path = scrapy.Field()
     url_object_id = scrapy.Field()
