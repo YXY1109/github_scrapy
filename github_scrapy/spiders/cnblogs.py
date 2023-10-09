@@ -71,7 +71,7 @@ class QuotesSpider(scrapy.Spider):
         # url_list = response.css('#news_list h2 a::attr(href)').extract()
 
         # 获取详情页面的链接，并准备解析详情数据
-        post_nodes = response.xpath('//div[@id="news_list"]/div[@class="news_block"]')[:2]
+        post_nodes = response.xpath('//div[@id="news_list"]/div[@class="news_block"]')[:1]
         for post_node in post_nodes:
             # todo xpath无法获取下一个 css可以
             image_url = post_node.xpath('//div[@class="entry_summary"]/a/img/@src').get()
@@ -109,7 +109,11 @@ class QuotesSpider(scrapy.Spider):
         content_list = response.xpath('//div[@id="news_body"]//p/text()').getall()
         cn_item["title"] = title
         cn_item["content"] = ",".join(content_list)
-        cn_item["front_image_url"] = [response.meta.get("front_image_url", "")]
+        image_url = response.meta.get("front_image_url", "")
+        if image_url:
+            cn_item["front_image_url"] = [image_url]
+        else:
+            cn_item["front_image_url"] = []
         cn_item["url_object_id"] = get_md5(response.url)
 
         yield cn_item
