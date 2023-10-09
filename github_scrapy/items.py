@@ -9,5 +9,6 @@ import scrapy
 class CnBlogsItem(scrapy.Item):
     title = scrapy.Field()
     content = scrapy.Field()
-    image_urls = scrapy.Field()
+    front_image_url = scrapy.Field()
+    front_image_name = scrapy.Field()
     url_object_id = scrapy.Field()

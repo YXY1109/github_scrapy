@@ -67,7 +67,7 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     "github_scrapy.pipelines.GithubScrapyPipeline": 300,
-    "scrapy.pipelines.images.ImagesPipeline": 1
+    "scrapy.pipelines.images.ImagesPipeline": 1,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -96,7 +96,7 @@ REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
-# 图片下载路径设置
+# 图片下载路径设置，要安装：pip install pillow
 project_dir = os.path.dirname(os.path.abspath(__file__))
 print(f"project_dir:{project_dir}")
 # /Users/cj/PycharmProjects/github_scrapy/github_scrapy/images
@@ -105,4 +105,5 @@ print(f"image_store_path:{image_store_path}")
 IMAGES_STORE = image_store_path
 
 # 图片下载的字段
-IMAGES_URLS_FIELD = "image_urls"
+IMAGES_URLS_FIELD = "front_image_url"
+IMAGES_RESULT_FIELD = "front_image_name"

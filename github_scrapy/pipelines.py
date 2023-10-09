@@ -12,4 +12,6 @@ class GithubScrapyPipeline:
     def process_item(self, item, spider):
         title = item.get("title")
         print(f"pipeline----------------------:{title}")
+        front_image_url = item.get("front_image_url")
+        print(f"pipeline----------------------:{front_image_url}")
         return item

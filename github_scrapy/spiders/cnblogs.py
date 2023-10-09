@@ -10,15 +10,11 @@ from github_scrapy.utils.common import get_md5
 
 class QuotesSpider(scrapy.Spider):
     name = "cnblogs"
-
     custom_settings = {
         "COOKIES_ENABLED": True,
     }
 
     def start_requests(self):
-        urls = [
-            "https://news.cnblogs.com/"
-        ]
         options = uc.ChromeOptions()
         options.headless = False
         browser = uc.Chrome(options=options, version_main=114)
@@ -30,6 +26,9 @@ class QuotesSpider(scrapy.Spider):
         for cookie in cookies:
             cookies_dict[cookie["name"]] = cookie["value"]
 
+        urls = [
+            "https://news.cnblogs.com/"
+        ]
         for url in urls:
             headers = {
                 "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -72,12 +71,17 @@ class QuotesSpider(scrapy.Spider):
         # url_list = response.css('#news_list h2 a::attr(href)').extract()
 
         # 获取详情页面的链接，并准备解析详情数据
-        post_nodes = response.xpath('//div[@id="news_list"]/div[@class="news_block"]')[:10]
+        post_nodes = response.xpath('//div[@id="news_list"]/div[@class="news_block"]')[:2]
         for post_node in post_nodes:
-            image_url = post_node.xpath('//div[@class="entry_summary"]/a/img/@src').extract_first()
-            post_url = post_node.xpath('//h2[@class="news_entry"]/a/@href').extract_first()
-            yield scrapy.Request(url=parse.urljoin(response.url, post_url), callback=self.parse_detail,
-                                 meta={"image_urls": image_url})
+            # todo xpath无法获取下一个 css可以
+            image_url = post_node.xpath('//div[@class="entry_summary"]/a/img/@src').get()
+            image_url = post_node.css('.entry_summary a img::attr(src)').get()
+            print(f"image_url:{image_url}")
+            post_url = post_node.xpath('//h2[@class="news_entry"]/a/@href').get()
+            post_url = post_node.css('h2 a::attr(href)').get()
+            detail_url = parse.urljoin(response.url, post_url)
+            print(f"detail_url:{detail_url}")
+            yield scrapy.Request(url=detail_url, callback=self.parse_detail, meta={"front_image_url": image_url})
 
         """
         # 提取下一页的数据,第一种方式
@@ -105,8 +109,7 @@ class QuotesSpider(scrapy.Spider):
         content_list = response.xpath('//div[@id="news_body"]//p/text()').getall()
         cn_item["title"] = title
         cn_item["content"] = ",".join(content_list)
-        # cn_item["front_image_url"] = response.meta.get("front_image_url", "")
-        cn_item["image_urls"] = [response.meta.get("image_urls", "")]
+        cn_item["front_image_url"] = [response.meta.get("front_image_url", "")]
         cn_item["url_object_id"] = get_md5(response.url)
 
         yield cn_item
