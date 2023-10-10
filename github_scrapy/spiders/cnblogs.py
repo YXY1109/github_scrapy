@@ -81,22 +81,23 @@ class QuotesSpider(scrapy.Spider):
             post_url = post_node.css('h2 a::attr(href)').get()
             detail_url = parse.urljoin(response.url, post_url)
             print(f"detail_url:{detail_url}")
-            yield scrapy.Request(url=detail_url, callback=self.parse_detail, meta={"front_image_url": image_url})
+            yield scrapy.Request(url=detail_url, callback=self.parse_detail,
+                                 meta={"front_image_url": f"https:{image_url}"})
 
-        """
-        # 提取下一页的数据,第一种方式
-        next_url = response.xpath('//*[@id="sideleft"]/div[5]/a[11]/text()').extract_first()
-        # next_url = response.css('div.pager a:last-child::text').extract_first()
-        if next_url == 'Next >':
-            # 说明有下一页
-            next_url = response.xpath('//*[@id="sideleft"]/div[5]/a[11]/@href').extract_first()
-            # next_url = response.css('div.pager a:last-child::attr(href)').extract_first()
-            yield scrapy.Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
-        """
+            """
+            # 提取下一页的数据,第一种方式
+            next_url = response.xpath('//*[@id="sideleft"]/div[5]/a[11]/text()').extract_first()
+            # next_url = response.css('div.pager a:last-child::text').extract_first()
+            if next_url == 'Next >':
+                # 说明有下一页
+                next_url = response.xpath('//*[@id="sideleft"]/div[5]/a[11]/@href').extract_first()
+                # next_url = response.css('div.pager a:last-child::attr(href)').extract_first()
+                yield scrapy.Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
+            """
 
-        # 提取下一页的数据,第二种方式
-        # next_url = response.xpath('//a[contains(text(),"Next >")]/@href').extract_first()
-        # yield scrapy.Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
+            # 提取下一页的数据,第二种方式
+            # next_url = response.xpath('//a[contains(text(),"Next >")]/@href').extract_first()
+            # yield scrapy.Request(url=parse.urljoin(response.url, next_url), callback=self.parse)
 
     def parse_detail(self, response):
         """

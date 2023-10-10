@@ -66,8 +66,11 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "github_scrapy.pipelines.ArticleImagePipeline": 1,
-    "github_scrapy.pipelines.JsonWithEncodingPipline": 2,
+    "github_scrapy.pipelines.ArticleImagePipeline": 1,  # 图片下载
+    "github_scrapy.pipelines.JsonWithEncodingPipline": 2,  # 自定导出json
+    "github_scrapy.pipelines.JsonExporterPipline": 3,  # 官方导出json
+    # "github_scrapy.pipelines.MySQLPipeline": 4,  # 同步存入mysql
+    "github_scrapy.pipelines.AsyncMySQLPipeline": 5,  # 异步存入mysql
     "github_scrapy.pipelines.GithubScrapyPipeline": 300,
 }
 
@@ -108,3 +111,12 @@ IMAGES_STORE = image_store_path
 # 图片下载的字段
 IMAGES_URLS_FIELD = "front_image_url"
 IMAGES_RESULT_FIELD = "image_file_path"
+
+MYSQL_SETTINGS = {
+    'host': '127.0.0.1',
+    'port': 3306,
+    'user': 'root',
+    'password': 'root',
+    'db': 'github_spider',
+    'charset': 'utf8mb4',
+}
