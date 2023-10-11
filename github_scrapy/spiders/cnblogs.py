@@ -81,8 +81,10 @@ class QuotesSpider(scrapy.Spider):
             post_url = post_node.css('h2 a::attr(href)').get()
             detail_url = parse.urljoin(response.url, post_url)
             print(f"detail_url:{detail_url}")
+            if image_url.starswith("//"):
+                image_url = f"https:{image_url}"
             yield scrapy.Request(url=detail_url, callback=self.parse_detail,
-                                 meta={"front_image_url": f"https:{image_url}"})
+                                 meta={"front_image_url": image_url})
 
             """
             # 提取下一页的数据,第一种方式
