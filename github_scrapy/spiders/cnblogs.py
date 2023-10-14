@@ -8,7 +8,7 @@ from github_scrapy.items import CnBlogsItem
 from github_scrapy.utils.common import get_md5
 
 
-class QuotesSpider(scrapy.Spider):
+class CnBlogsSpider(scrapy.Spider):
     name = "cnblogs"
     custom_settings = {
         "COOKIES_ENABLED": True,
