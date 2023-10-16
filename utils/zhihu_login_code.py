@@ -178,7 +178,7 @@ class ZhiHuCode(object):
         cv2.destroyAllWindows()
 
 
-class Login(object):
+class ZhiHuLogin(object):
 
     def __init__(self, user, password, retry=3):
         options = uc.ChromeOptions()
@@ -282,7 +282,7 @@ class Login(object):
 if __name__ == '__main__':
     phone = global_config.get("zhihu", "phone")
     password = global_config.get("zhihu", "password")
-    zhihu_login = Login(phone, password, retry=5)
+    zhihu_login = ZhiHuLogin(phone, password, retry=5)
     cookies = zhihu_login.login()
     print(cookies)
     print("完成")
