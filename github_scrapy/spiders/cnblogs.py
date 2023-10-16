@@ -1,11 +1,10 @@
-import time
 from urllib import parse
 
 import scrapy
 import undetected_chromedriver as uc
 
 from github_scrapy.items import CnBlogsItem
-from github_scrapy.utils.common import get_md5
+from utils.common import get_md5
 
 
 class CnBlogsSpider(scrapy.Spider):
@@ -71,7 +70,7 @@ class CnBlogsSpider(scrapy.Spider):
         # url_list = response.css('#news_list h2 a::attr(href)').extract()
 
         # 获取详情页面的链接，并准备解析详情数据
-        post_nodes = response.xpath('//div[@id="news_list"]/div[@class="news_block"]')[:1]
+        post_nodes = response.xpath('//div[@id="news_list"]/div[@class="news_block"]')[:5]
         for post_node in post_nodes:
             # todo xpath无法获取下一个 css可以
             image_url = post_node.xpath('//div[@class="entry_summary"]/a/img/@src').get()
@@ -81,7 +80,7 @@ class CnBlogsSpider(scrapy.Spider):
             post_url = post_node.css('h2 a::attr(href)').get()
             detail_url = parse.urljoin(response.url, post_url)
             print(f"detail_url:{detail_url}")
-            if image_url.starswith("//"):
+            if image_url.startswith("//"):
                 image_url = f"https:{image_url}"
             yield scrapy.Request(url=detail_url, callback=self.parse_detail,
                                  meta={"front_image_url": image_url})

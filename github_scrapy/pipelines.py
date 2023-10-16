@@ -7,7 +7,7 @@ import codecs
 
 import json
 
-from github_scrapy.db.sqlalchemy_base import MySession, Article
+from utils.sqlalchemy_base import MySession, Article
 
 
 class GithubScrapyPipeline:

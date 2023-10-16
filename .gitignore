@@ -1,3 +1,4 @@
 .idea/
 *.py[cod]
 /github_scrapy/images/full/
+/config.ini

@@ -4,6 +4,8 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 
 from sqlalchemy import String, Column, Text, DateTime, create_engine
 
+from utils.config import global_config
+
 Base = declarative_base()
 
 
@@ -24,7 +26,9 @@ class Article(Base):
 class MySession(object):
     def __init__(self):
         # 创建mysql连接引擎
-        engine = create_engine("mysql+pymysql://root:root@127.0.0.1:3306/github_spider",
+        name = global_config.get("mysql", "name")
+        password = global_config.get("mysql", "password")
+        engine = create_engine(f"mysql+pymysql://{name}:{password}@127.0.0.1:3306/github_spider",
                                echo=True)
         # 创建表
         Base.metadata.create_all(engine, checkfirst=True)

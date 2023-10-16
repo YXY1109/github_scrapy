@@ -10,6 +10,8 @@ import cv2
 import numpy as np
 import undetected_chromedriver as uc
 
+from utils.config import global_config
+
 
 class ZhiHuCode(object):
     def __init__(self, slider_ele=None, background_ele=None, count=1, save_image=False):
@@ -111,13 +113,12 @@ class ZhiHuCode(object):
         slider_pic = cv2.imread(slider, 0)
         background_pic = cv2.imread(background, 0)
 
-        # 获取缺口数组的形状
+        # 获取缺口数组的形状,宽高
         width, height = slider_pic.shape[::-1]
 
         # 将处理之后的图片另存
         slider01 = "slider01.jpg"
         slider02 = "slider02.jpg"
-
         background01 = "background01.jpg"
 
         cv2.imwrite(slider01, slider_pic)
@@ -279,6 +280,9 @@ class Login(object):
 
 
 if __name__ == '__main__':
-    zhihu_login = Login("17749960123", "")
+    phone = global_config.get("zhihu", "phone")
+    password = global_config.get("zhihu", "password")
+    zhihu_login = Login(phone, password, retry=5)
     cookies = zhihu_login.login()
     print(cookies)
+    print("完成")
