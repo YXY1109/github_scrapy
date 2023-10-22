@@ -268,9 +268,10 @@ class ZhiHuLogin(object):
 
     def get_cookies(self):
         cookies = self.browser.get_cookies()
-        cookies_dict = ""
+        cookies_dict = {}
         for cookie in cookies:
-            cookies_dict += '{}={};'.format(cookie['name'], cookie['value'])
+            # cookies_dict += '{}={};'.format(cookie['name'], cookie['value'])
+            cookies_dict[cookie['name']] = cookie['value']
         return cookies_dict
 
     def __del__(self):
