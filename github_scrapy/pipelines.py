@@ -111,6 +111,11 @@ class AsyncMySQLPipeline:
         return cls(db_settings)
 
     async def process_item(self, item, spider):
+        # 根据不同的item，选择不同的数据库
+        print(item.__class__.__name__)
+        #todo 后边再验证了
+        insert_sql, params = item.get_insert_sql()
+
         print("process_item")
         self.db_pool = await aiomysql.create_pool(**self.db_settings)
         title = item.get("title", "")

@@ -28,6 +28,12 @@ class CnBlogsItem(scrapy.Item):
     image_file_path = scrapy.Field()
     url_object_id = scrapy.Field()
 
+    def get_insert_sql(self):
+        # todo 插入和更新一起操作了
+        insert_sql = "insert into cnblogs_spider(title, content) values (%s, %s) ON DUPLICATE KEY UPDATE content=VALUES(content)"
+        params = (self["title"], self["content"])
+        return insert_sql, params
+
 
 class ZhihuQuestionItem(scrapy.item):
     """

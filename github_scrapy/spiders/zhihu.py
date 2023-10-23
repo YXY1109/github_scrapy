@@ -39,9 +39,11 @@ class ZhiHuSpider(scrapy.Spider):
 
     def parse(self, response: Response, **kwargs: Any) -> Any:
         print("开始解析首页数据")
+        # 提取所有url
         all_urls = response.css("a::attr(href)").extract()
+        # 拼接url
         all_urls = [parse.urljoin(response.url, url) for url in all_urls]
-
+        # 保留https开始的url
         all_urls = filter(lambda x: x.startswith("https"), all_urls)
         for url in all_urls:
             print(f"url:{url}")
@@ -49,6 +51,7 @@ class ZhiHuSpider(scrapy.Spider):
             # https://www.zhihu.com/question/627004253
             match_object = re.match("(.*zhihu.com/question/(\d+))(/|$).*", url)
             if match_object:
+                # 如果提取到question相关页面，继续提取详情
                 request_url = match_object.group(1)
                 question_id = match_object.group(2)
                 print(f"request_url:{request_url}")
@@ -56,6 +59,10 @@ class ZhiHuSpider(scrapy.Spider):
                 # 找到question
                 yield scrapy.Request(request_url, headers=self.ua.random, callback=self.parse_question,
                                      dont_filter=True, meta={"question_id": question_id})
+                # break #调试使用
+            else:
+                # 如果没有提取到question，继续跟踪
+                yield scrapy.Request(url, headers=self.ua.random, dont_filter=True)
 
     def parse_question(self, response):
         # 处理question页面，从页面中提取具体的question item
@@ -76,3 +83,4 @@ class ZhiHuSpider(scrapy.Spider):
         item_loader.add_css("answer_num", "span.List-headerText::text")
 
         question_item = item_loader.load_item()
+        yield question_item
