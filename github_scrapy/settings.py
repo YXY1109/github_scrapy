@@ -66,11 +66,11 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    "github_scrapy.pipelines.ArticleImagePipeline": 1,  # 图片下载
-    "github_scrapy.pipelines.JsonWithEncodingPipline": 2,  # 自定导出json
-    "github_scrapy.pipelines.JsonExporterPipline": 3,  # 官方导出json
+    # "github_scrapy.pipelines.ArticleImagePipeline": 1,  # 图片下载
+    # "github_scrapy.pipelines.JsonWithEncodingPipline": 2,  # 自定导出json
+    # "github_scrapy.pipelines.JsonExporterPipline": 3,  # 官方导出json
     # "github_scrapy.pipelines.MySQLPipeline": 4,  # 同步存入mysql
-    "github_scrapy.pipelines.AsyncMySQLPipeline": 5,  # 异步存入mysql
+    # "github_scrapy.pipelines.AsyncMySQLPipeline": 5,  # 异步存入mysql
     "github_scrapy.pipelines.GithubScrapyPipeline": 300,
 }
 
