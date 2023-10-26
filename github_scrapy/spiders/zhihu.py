@@ -1,13 +1,14 @@
 import re
+import time
 from typing import Any
 from urllib import parse
 
 import scrapy
 from fake_useragent import UserAgent
 from scrapy.http import Response
-from scrapy.loader import ItemLoader
-# from github_scrapy.items import ZhihuQuestionItem
 import undetected_chromedriver as uc
+
+from github_scrapy.items import ZhihuQuestionItem
 from utils.config import global_config
 from utils.zhihu_login_code import ZhiHuLogin
 
@@ -17,7 +18,7 @@ class ZhiHuSpider(scrapy.Spider):
     is_debug = True
     name = "zhihu"
     if is_debug:
-        # 测试
+        # 测试,手动扫码登录
         start_urls = ['https://www.zhihu.com/signin']
     else:
         start_urls = ['http://www.zhihu.com/']
@@ -37,7 +38,7 @@ class ZhiHuSpider(scrapy.Spider):
         # 1：opencv
         # 2：机器学习
         if self.is_debug:
-            # 测试
+            # 测试，扫码登录
             options = uc.ChromeOptions()
             options.headless = False
             browser = uc.Chrome(options=options, version_main=114)
@@ -50,7 +51,7 @@ class ZhiHuSpider(scrapy.Spider):
                 cookies_dict[cookie["name"]] = cookie["value"]
             yield scrapy.Request("http://www.zhihu.com/", cookies=cookies_dict, headers=self.headers, dont_filter=True)
         else:
-            # 正式
+            # 正式，自动登录
             phone = global_config.get("zhihu", "phone")
             password = global_config.get("zhihu", "password")
             zhihu_login = ZhiHuLogin(phone, password, retry=5)
@@ -92,13 +93,42 @@ class ZhiHuSpider(scrapy.Spider):
     def parse_question(self, response):
         # 处理question页面，从页面中提取具体的question item
         # 方式1
-        # print(f"开始提取问题内容")
-        title = response.css("h1.QuestionHeader-title::text").extract_first()
-        title = response.xpath('//h1[@class="QuestionHeader-title"]/text()').extract_first()
-        print(f"title:{title}")
-        content = response.css("div.Question-main").extract_first()
+        print(f"开始提取问题内容")
+        question_id = response.meta.get("question_id")
+        url = response.url  # https://www.zhihu.com/question/627868335
+        topics_list = response.xpath("//div[@class='QuestionHeader-topics']/div[@class='Tag QuestionTopic css-1s3a4zw']"
+                                     "//div[@class='css-1gomreu']//text()").getall()
+        topics = ",".join(topics_list)
+        title = response.xpath("//h1[@class='QuestionHeader-title']/text()").get()
 
-        # response.xpath('//span[@class="RichText ztext css-117anjg"]/p/text()').extract()
+        content = response.xpath("//div[@class='QuestionRichText QuestionRichText--expandable "
+                                 "QuestionRichText--collapsed']//span/text()").get()
+        if not content:  # 未找到的情况
+            content = response.xpath("//div[@class='QuestionRichText QuestionRichText--collapsed']//span/text()").get()
+
+        answer_num = response.xpath("//h4[@class='List-headerText']/span/text()").get()
+        good_item = response.xpath("//div[@class='GoodQuestionAction']/button/text()").get()
+        good_num = good_item.split(" ")[1] if good_item else 0
+        comment_item = response.xpath("//div[@class='QuestionHeader-Comment']/button/text()").get()
+        comment_num = comment_item.split(" ")[0] if comment_item else 0
+        watch_user_num_item = response.xpath("//div[@class='NumberBoard-itemInner']/strong"
+                                             "[@class='NumberBoard-itemValue']/text()").getall()
+        watch_num = watch_user_num_item[0]  # 关注者
+        scan_num = watch_user_num_item[1]  # 被浏览
+
+        question = ZhihuQuestionItem()
+        question["question_id"] = question_id
+        question['url'] = url
+        question['topics'] = topics
+        question['title'] = title
+        question['content'] = content
+        question['answer_num'] = answer_num
+        question['good_num'] = good_num
+        question['comment_num'] = comment_num
+        question['watch_user_num'] = watch_num
+        question['scan_num'] = scan_num
+        question['create_time'] = time.time()
+        yield question
 
         # 方式2 todo 待优化
         # ZhihuQuestionItem()

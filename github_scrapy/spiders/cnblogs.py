@@ -3,8 +3,8 @@ from urllib import parse
 import scrapy
 import undetected_chromedriver as uc
 
-from github_scrapy.items import CnBlogsItem
 from utils.common import get_md5
+from github_scrapy.items import CnBlogsItem
 
 
 class CnBlogsSpider(scrapy.Spider):
