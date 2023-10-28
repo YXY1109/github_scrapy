@@ -8,4 +8,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # 博客园
 # execute(["scrapy", "crawl", "cnblogs"])
 # 知乎
-execute(["scrapy", "crawl", "zhihu"])
+# execute(["scrapy", "crawl", "zhihu"])
+# 拉钩
+execute(["scrapy", "crawl", "lagou"])

@@ -1,4 +1,5 @@
 import scrapy
+from scrapy.loader import ItemLoader
 
 from scrapy.loader.processors import MapCompose, TakeFirst
 
@@ -48,17 +49,29 @@ class ZhihuQuestionItem(scrapy.Item):
     create_time = scrapy.Field()
     crawl_time = scrapy.Field()
 
-# class ZhihuAnswerItem(scrapy.item):
-#     """
-#     知乎的回答
-#     """
-#     zhihu_id = scrapy.Field()
-#     url = scrapy.Field()
-#     question_id = scrapy.Field()
-#     author_id = scrapy.Field()
-#     content = scrapy.Field()
-#     comment_num = scrapy.Field()
-#     create_time = scrapy.Field()
-#     update_time = scrapy.Field()
-#     crawl_time = scrapy.Field()
-#     crawl_update_time = scrapy.Field()
+
+class ZhihuAnswerItem(scrapy.Item):
+    """
+    知乎的回答
+    """
+    zhihu_id = scrapy.Field()
+    url = scrapy.Field()
+    question_id = scrapy.Field()
+    author_id = scrapy.Field()
+    content = scrapy.Field()
+    comment_num = scrapy.Field()
+    create_time = scrapy.Field()
+    update_time = scrapy.Field()
+    crawl_time = scrapy.Field()
+    crawl_update_time = scrapy.Field()
+
+
+class LagouItem(scrapy.Item):
+    title = scrapy.Field()
+    url = scrapy.Field()
+    salary = scrapy.Field()
+    city = scrapy.Field()
+
+
+class LagouItemLoader(ItemLoader):
+    default_output_processor = TakeFirst()
