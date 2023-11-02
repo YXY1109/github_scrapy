@@ -24,7 +24,7 @@ class ZhiHuSpider(scrapy.Spider):
         start_urls = ['http://www.zhihu.com/']
 
     allowed_domains = ["www.zhihu.com"]
-    custom_settings = {
+    custom_settings = {  # 单个爬虫的设置参数
         "COOKIES_ENABLED": True,
     }
     ua = UserAgent()

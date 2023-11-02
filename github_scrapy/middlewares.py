@@ -8,6 +8,9 @@ from scrapy import signals
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
 
+import random
+from fake_useragent import UserAgent
+
 
 class GithubScrapySpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
@@ -98,6 +101,26 @@ class GithubScrapyDownloaderMiddleware:
         # - return a Response object: stops process_exception() chain
         # - return a Request object: stops process_exception() chain
         pass
+
+    def spider_opened(self, spider):
+        spider.logger.info("Spider opened: %s" % spider.name)
+
+
+class RandomUserAgentMiddleware(object):
+
+    def __init__(self, crawler):
+        self.ua = UserAgent()
+        self.ua_type = crawler.signals.get("RANDOM_UA_TYPE", "random")
+
+    def process_request(self, request, spider):
+        def get_ua():
+            return getattr(self.ua, self.ua_type)
+
+        # 设置ua
+        request.headers.setdefault('User-Agent', get_ua())
+        # 设置代理ip
+        # request.meta['proxy'] = 'http://000000000:7890'
+        return None
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)

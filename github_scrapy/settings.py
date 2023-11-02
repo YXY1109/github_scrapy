@@ -34,7 +34,7 @@ ROBOTSTXT_OBEY = False
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = True  # 设置为true,后续的所有请求都会使用第一次的cookies
+COOKIES_ENABLED = False  # 设置为true,后续的所有请求都会使用第一次的cookies
 COOKIES_DEBUG = True
 
 # Disable Telnet Console (enabled by default)
