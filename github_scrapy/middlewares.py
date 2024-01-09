@@ -10,6 +10,8 @@ from itemadapter import is_item, ItemAdapter
 
 import random
 from fake_useragent import UserAgent
+from scrapy.http import HtmlResponse
+from selenium.webdriver.chrome import webdriver
 
 
 class GithubScrapySpiderMiddleware:
@@ -124,3 +126,17 @@ class RandomUserAgentMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+class JSPageMiddleware(object):
+
+    # def __init__(self):
+    #     self.browser = webdriver.Chrome()
+    #     super(JSPageMiddleware, self).__init__()
+
+    def process_request(self, request, spider):
+        # 通过chrome请求动态网页
+        # browser = webdriver.Chrome()
+        spider.browser.get(request.url)
+        return HtmlResponse(url=spider.browser.current_url, body=spider.browser.page_source, request=request,
+                            encoding='utf-8')

@@ -2,6 +2,8 @@ from urllib import parse
 
 import scrapy
 import undetected_chromedriver as uc
+from pydispatch import dispatcher
+from scrapy import signals
 
 from utils.common import get_md5
 from github_scrapy.items import CnBlogsItem
@@ -13,14 +15,28 @@ class CnBlogsSpider(scrapy.Spider):
         "COOKIES_ENABLED": True,
     }
 
-    def start_requests(self):
+    def __init__(self):
         options = uc.ChromeOptions()
         options.headless = False
-        browser = uc.Chrome(options=options, version_main=114)
-        browser.get("https://account.cnblogs.com/signin")
+        self.browser = uc.Chrome(options=options, version_main=114)
+        super(CnBlogsSpider, self).__init__()
+
+        # 信号量
+        dispatcher.connect(self.spider_closed, signals.spider_closed)
+
+    def spider_closed(self):
+        # 当爬虫退出的时候，关闭chrome
+        self.browser.close()
+        self.browser.quit()
+
+    def start_requests(self):
+        # options = uc.ChromeOptions()
+        # options.headless = False
+        # browser = uc.Chrome(options=options, version_main=114)
+        self.browser.get("https://account.cnblogs.com/signin")
         # time.sleep(3)
         input("回车继续！！！")
-        cookies = browser.get_cookies()
+        cookies = self.browser.get_cookies()
         cookies_dict = {}
         for cookie in cookies:
             cookies_dict[cookie["name"]] = cookie["value"]
