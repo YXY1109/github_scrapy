@@ -21,3 +21,5 @@ scrapy shell https://news.cnblogs.com/
 再用这个验证：
 response.xpath("//div[@class='content']/h2[@class='news_entry']/a/text()").get()
 ~~~
+
+### 当初的学习项目，差不多也过时了
